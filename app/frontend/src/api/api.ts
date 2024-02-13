@@ -52,3 +52,11 @@ export async function chatApi(request: ChatAppRequest, idToken: string | undefin
 export function getCitationFilePath(citation: string): string {
     return `${BACKEND_URI}/content/${citation}`;
 }
+
+export async function generateChatDocument(chatBody: any) {
+    return fetch(`${BACKEND_URI}/doc-gen`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat: chatBody })
+    });
+}

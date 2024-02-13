@@ -7,6 +7,9 @@ import os
 from pathlib import Path
 from typing import Any, AsyncGenerator, Dict, Union, cast
 
+from docx import Document
+from io import BytesIO
+
 from azure.core.credentials import AzureKeyCredential
 from azure.core.credentials_async import AsyncTokenCredential
 from azure.core.exceptions import ResourceNotFoundError
@@ -32,6 +35,7 @@ from quart import (
     send_from_directory,
 )
 from quart_cors import cors
+
 
 from approaches.approach import Approach
 from approaches.chatreadretrieveread import ChatReadRetrieveReadApproach
@@ -152,6 +156,32 @@ async def format_as_ndjson(r: AsyncGenerator[dict, None]) -> AsyncGenerator[str,
     except Exception as error:
         logging.exception("Exception while generating response stream: %s", error)
         yield json.dumps(error_dict(error))
+
+
+
+
+@bp.route("/doc-gen", methods=["Post"])
+async def generate_document():
+    if not request.is_json:
+        return jsonify({"error": "request must be json"}), 415
+    request_json = await request.get_json()
+    context = request_json.get("chat", {})
+
+    document = Document()
+
+    document.add_heading('Azure OpenAI Chat', 0)
+    document.add_heading('Responses', level=1)
+
+    for i in range(len(context)):
+        document.add_paragraph(
+            context[i][1].get("choices")[0].get("message").get("content"), style='List Number'
+        )
+    
+    buffer = BytesIO()
+    document.save(buffer)
+    buffer.seek(0)  # Rewind the buffer to the beginning
+
+    return await send_file(buffer, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document', as_attachment=True, attachment_filename='output.docx')
 
 
 @bp.route("/chat", methods=["POST"])

@@ -4,6 +4,7 @@
 #
 #    pip-compile requirements.in
 #
+python-docx
 aiofiles==23.2.1
     # via quart
 aiohttp==3.9.3
