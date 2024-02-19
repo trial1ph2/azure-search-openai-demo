@@ -1,6 +1,6 @@
  #!/bin/sh
 
-. ./scripts/loadenv.sh
+. ./loadenv.sh
 
 echo 'Running "prepdocs.py"'
 
@@ -66,7 +66,7 @@ if [ -n "$AZURE_TENANT_ID" ]; then
   tenantArg="--tenantid $AZURE_TENANT_ID"
 fi
 
-./scripts/.venv/bin/python ./scripts/prepdocs.py './data/*' --verbose \
+./scripts/.venv/bin/python ./prepdocs.py '../data/*' --verbose \
 --storageaccount "$AZURE_STORAGE_ACCOUNT" --container "$AZURE_STORAGE_CONTAINER"  \
 --searchservice "$AZURE_SEARCH_SERVICE" --index "$AZURE_SEARCH_INDEX" \
 $searchAnalyzerNameArg $searchSecretNameArg \
