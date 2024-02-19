@@ -24,6 +24,11 @@ from prepdocslib.pdfparser import DocumentAnalysisPdfParser, LocalPdfParser, Pdf
 from prepdocslib.strategy import SearchInfo, Strategy
 from prepdocslib.textsplitter import TextSplitter
 
+import sys
+
+if sys.platform == 'win32':
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 
 def is_key_empty(key):
     return key is None or len(key.strip()) == 0

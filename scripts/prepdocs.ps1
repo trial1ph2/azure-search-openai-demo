@@ -1,4 +1,4 @@
-./scripts/loadenv.ps1
+./loadenv.ps1
 
 $venvPythonPath = "./scripts/.venv/scripts/python.exe"
 if (Test-Path -Path "/usr") {
@@ -62,9 +62,9 @@ if ($env:AZURE_TENANT_ID) {
 }
 
 $cwd = (Get-Location)
-$dataArg = "`"$cwd/data/*`""
+$dataArg = "`"$cwd\data\*`""
 
-$argumentList = "./scripts/prepdocs.py $dataArg --verbose " + `
+$argumentList = "./prepdocs.py $dataArg --verbose " + `
 "--storageaccount $env:AZURE_STORAGE_ACCOUNT --container $env:AZURE_STORAGE_CONTAINER " + `
 "--searchservice $env:AZURE_SEARCH_SERVICE --index $env:AZURE_SEARCH_INDEX " + `
 "$searchAnalyzerNameArg $searchSecretNameArg " + `
