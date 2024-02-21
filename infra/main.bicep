@@ -258,6 +258,17 @@ module backend 'core/host/appservice.bicep' = {
 
 var defaultOpenAiDeployments = [
   {
+    name: chatGptDeploymentName
+    model: {
+      format: 'OpenAI'
+      name: chatGptModelName
+      version: chatGptModelVersion
+    }
+    sku: {
+      name: 'Standard'
+      capacity: chatGptDeploymentCapacity
+    }}
+  {
     name: embeddingDeploymentName
     model: {
       format: 'OpenAI'
