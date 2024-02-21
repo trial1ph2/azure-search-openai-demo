@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Stack, IconButton } from "@fluentui/react";
+import { useMemo, useState } from "react";
+import { Stack, Checkbox } from "@fluentui/react";
 import DOMPurify from "dompurify";
 
 import styles from "./Answer.module.css";
@@ -16,6 +16,7 @@ interface Props {
     onThoughtProcessClicked: () => void;
     onSupportingContentClicked: () => void;
     onFollowupQuestionClicked?: (question: string) => void;
+    handleCheckedChange: (checked: Boolean) => void;
     showFollowupQuestions?: boolean;
 }
 
@@ -27,8 +28,11 @@ export const Answer = ({
     onThoughtProcessClicked,
     onSupportingContentClicked,
     onFollowupQuestionClicked,
+    handleCheckedChange,
     showFollowupQuestions
 }: Props) => {
+    const [checkedResponse, setCheckedResponse] = useState(true);
+    const [showTootlip, setShowTooltip] = useState(false);
     const followupQuestions = answer.choices[0].context.followup_questions;
     const messageContent = answer.choices[0].message.content;
     const parsedAnswer = useMemo(() => parseAnswerToHtml(messageContent, isStreaming, onCitationClicked), [answer]);
@@ -38,8 +42,8 @@ export const Answer = ({
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
             <Stack.Item>
-                <Stack horizontal horizontalAlign="space-between">
-                    <AnswerIcon />
+                <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 10 }}>
+                    {/* <AnswerIcon />
                     <div>
                         <IconButton
                             style={{ color: "black" }}
@@ -57,6 +61,35 @@ export const Answer = ({
                             onClick={() => onSupportingContentClicked()}
                             disabled={!answer.choices[0].context.data_points}
                         />
+                    </div> */}
+                    <div
+                        style={{ position: "relative", display: "inline-block" }}
+                        onMouseEnter={() => setShowTooltip(true)}
+                        onMouseLeave={() => setShowTooltip(false)}
+                    >
+                        <Checkbox
+                            checked={checkedResponse}
+                            onChange={(_: any, checked: any) => {
+                                setCheckedResponse(!checkedResponse);
+                                handleCheckedChange(checked);
+                            }}
+                        />
+                        {showTootlip && (
+                            <div
+                                style={{
+                                    width: "400px",
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "calc(100%+8px)",
+                                    transform: "translateY(-50%)",
+                                    marginLeft: "25px",
+                                    color: "gray",
+                                    fontSize: "12px"
+                                }}
+                            >
+                                Downloaded document will contain this response, if selected
+                            </div>
+                        )}
                     </div>
                 </Stack>
             </Stack.Item>

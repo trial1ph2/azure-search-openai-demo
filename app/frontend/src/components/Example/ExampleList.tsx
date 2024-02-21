@@ -2,16 +2,12 @@ import { Example } from "./Example";
 
 import styles from "./Example.module.css";
 
-const DEFAULT_EXAMPLES: string[] = [
-    "Please provide Network design document for Industrial automation",
-    "Please provide Network design document for Observatory",
-    "Please provide security aspects for SD-WAN Design"
-];
+const DEFAULT_EXAMPLES: string[] = ["High Level Design", "Low Level Design", "Method of Procedure"];
 
 const GPT4V_EXAMPLES: string[] = [
-    "Please provide Network design document for Industrial automation",
-    "Please provide Network design document for Observatory",
-    "Please provide security aspects for SD-WAN Design"
+    "Compare the impact of interest rates and GDP in financial markets.",
+    "What is the expected trend for the S&P 500 index over the next five years? Compare it to the past S&P 500 performance",
+    "Can you identify any correlation between oil prices and stock market trends?"
 ];
 
 interface Props {

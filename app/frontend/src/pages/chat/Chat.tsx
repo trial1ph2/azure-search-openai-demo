@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect } from "react";
-import { Checkbox, Panel, DefaultButton, TextField, SpinButton } from "@fluentui/react";
+import { Checkbox, Panel, DefaultButton, TextField, SpinButton, Dialog, DialogType, Stack, List, mergeStyles, IconButton, Icon } from "@fluentui/react";
 import { SparkleFilled } from "@fluentui/react-icons";
 import readNDJSONStream from "ndjson-readablestream";
-
+import { Button } from "@fluentui/react-components";
 import styles from "./Chat.module.css";
 
 import {
@@ -15,7 +15,7 @@ import {
     ResponseMessage,
     VectorFieldOptions,
     GPT4VInput,
-    generateChatDocument,
+    generateChatDocument
 } from "../../api";
 import { Answer, AnswerError, AnswerLoading } from "../../components/Answer";
 import { QuestionInput } from "../../components/QuestionInput";
@@ -30,6 +30,7 @@ import { useMsal } from "@azure/msal-react";
 import { TokenClaimsDisplay } from "../../components/TokenClaimsDisplay";
 import { GPT4VSettings } from "../../components/GPT4VSettings";
 import { CreateDocumentButton } from "../../components/CreateDocumentButton";
+import { examples } from "../../constants/context.json";
 
 const Chat = () => {
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
@@ -140,7 +141,7 @@ const Chat = () => {
             ]);
 
             const request: ChatAppRequest = {
-                messages: [...messages, { content: question, role: "user" }],
+                messages: [...examples, ...messages, { content: question, role: "user" }],
                 stream: shouldStream,
                 context: {
                     overrides: {
@@ -195,16 +196,30 @@ const Chat = () => {
     };
 
     const generateDocument = () => {
-        const response = generateChatDocument(streamedAnswers).then(response => {
+        const filteredAnswers: [user: string, response: ChatAppResponse][] = streamedAnswers.map(item => {
+            const text = item[0];
+            const ansChoices = item[1].choices.filter((choice: any) => {
+                return choice.hasOwnProperty("isChecked") && ![undefined, null].includes(choice?.isChecked) ? choice.isChecked : true;
+            });
+            return [text, { choices: ansChoices }];
+        });
+        const validAnswers = filteredAnswers.filter(item => item[1].choices.length > 0);
+        const response = generateChatDocument(validAnswers).then(response => {
             response.blob().then(blob => {
                 let url = window.URL.createObjectURL(blob);
                 let a = document.createElement("a");
                 a.href = url;
-                a.download = `ChatGPT Response Document.docx`;
+                a.download = `Chat_Response_Document.docx`;
                 a.click();
-            })
-        })
-    }
+            });
+        });
+    };
+
+    const onCheckedResponseChange = (index: number, checked: boolean) => {
+        const itemsToUpdate = [...streamedAnswers];
+        itemsToUpdate[index][1].choices[0].isChecked = checked;
+        setStreamedAnswers(itemsToUpdate);
+    };
 
     useEffect(() => chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" }), [isLoading]);
     useEffect(() => chatMessageStreamEnd.current?.scrollIntoView({ behavior: "auto" }), [streamedAnswers]);
@@ -285,7 +300,8 @@ const Chat = () => {
                     {!lastQuestionRef.current ? (
                         <div className={styles.chatEmptyState}>
                             <SparkleFilled fontSize={"120px"} primaryFill={"rgba(115, 118, 225, 1)"} aria-hidden="true" aria-label="Chat logo" />
-                            <h1 className={styles.chatEmptyStateTitle}>AI Assisted Design</h1>
+                            <h1 className={styles.chatEmptyStateTitle}>Chat with your data</h1>
+                            <h2 className={styles.chatEmptyStateSubtitle}>Ask anything or try an example</h2>
                             <ExampleList onExampleClicked={onExampleClicked} useGPT4V={useGPT4V} />
                         </div>
                     ) : (
@@ -296,6 +312,9 @@ const Chat = () => {
                                         <UserChatMessage message={streamedAnswer[0]} />
                                         <div className={styles.chatMessageGpt}>
                                             <Answer
+                                                handleCheckedChange={(checked: any) => {
+                                                    onCheckedResponseChange(index, checked);
+                                                }}
                                                 isStreaming={true}
                                                 key={index}
                                                 answer={streamedAnswer[1]}
@@ -315,6 +334,9 @@ const Chat = () => {
                                         <UserChatMessage message={answer[0]} />
                                         <div className={styles.chatMessageGpt}>
                                             <Answer
+                                                handleCheckedChange={(checked: any) => {
+                                                    onCheckedResponseChange(index, checked);
+                                                }}
                                                 isStreaming={false}
                                                 key={index}
                                                 answer={answer[1]}
@@ -351,7 +373,7 @@ const Chat = () => {
                     <div className={styles.chatInput}>
                         <QuestionInput
                             clearOnSend
-                            placeholder="Type a new question (e.g. does my plan cover annual eye exams?)"
+                            placeholder="Type a new question (e.g. Do you want to generate design for 5G Core?)"
                             disabled={isLoading}
                             onSend={question => makeApiRequest(question)}
                         />

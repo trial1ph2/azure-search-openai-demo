@@ -14,9 +14,9 @@ const Layout = () => {
             <header className={styles.header} role={"banner"}>
                 <div className={styles.headerContainer}>
                     <Link to="/" className={styles.headerTitleContainer}>
-                        <h3 className={styles.headerTitle}>Infosys AI Search</h3>
+                        <h3 className={styles.headerTitle}>Network Lifecycle Manager</h3>
                     </Link>
-                    <nav>
+                    {/* <nav>
                         <ul className={styles.headerNavList}>
                             <li>
                                 <NavLink to="/" className={({ isActive }) => (isActive ? styles.headerNavPageLinkActive : styles.headerNavPageLink)}>
@@ -42,7 +42,7 @@ const Layout = () => {
                             </li>
                         </ul>
                     </nav>
-                    <h4 className={styles.headerRightText}>Infosys AI Search</h4>
+                    <h4 className={styles.headerRightText}>Infosys AI Search</h4> */}
                     {useLogin && <LoginButton />}
                 </div>
             </header>

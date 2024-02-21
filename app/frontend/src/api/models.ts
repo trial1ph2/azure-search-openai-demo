@@ -56,6 +56,7 @@ export type ResponseChoice = {
     message: ResponseMessage;
     context: ResponseContext;
     session_state: any;
+    isChecked: boolean;
 };
 
 export type ChatAppResponseOrError = {

@@ -6,7 +6,6 @@ import mimetypes
 import os
 from pathlib import Path
 from typing import Any, AsyncGenerator, Dict, Union, cast
-
 from docx import Document
 from io import BytesIO
 
@@ -179,7 +178,7 @@ async def generate_document():
     
     buffer = BytesIO()
     document.save(buffer)
-    buffer.seek(0)  # Rewind the buffer to the beginning
+    buffer.seek(0)
 
     return await send_file(buffer, mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document', as_attachment=True, attachment_filename='output.docx')
 

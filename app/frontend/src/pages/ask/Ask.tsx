@@ -174,6 +174,10 @@ export function Component(): JSX.Element {
         setUseGroupsSecurityFilter(!!checked);
     };
 
+    const onCheckedResponseChange = () => {
+        
+    };
+
     return (
         <div className={styles.askContainer}>
             <div className={styles.askTopSection}>
@@ -194,6 +198,7 @@ export function Component(): JSX.Element {
                 {!isLoading && answer && !error && (
                     <div className={styles.askAnswerContainer}>
                         <Answer
+                            handleCheckedChange={()=>onCheckedResponseChange()}
                             answer={answer}
                             isStreaming={false}
                             onCitationClicked={x => onShowCitation(x)}
